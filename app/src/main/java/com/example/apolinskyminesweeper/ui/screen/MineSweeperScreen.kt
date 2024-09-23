@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -99,6 +100,12 @@ fun MineSweeperScreen(modifier: Modifier,
                             Color.Red,
                             radius = size.width / 10,
                             center = Offset((size.width / 5) * (col + .5f), (size.width / 5) * (row + .5f) )
+                        )
+                    } else if (it != "") {
+                        drawRect(
+                            color = Color(0xFF888888),
+                            topLeft = Offset((size.width / 5) * col, (size.width / 5) * row),
+                            size = Size(size.width / 5, size.width / 5)
                         )
                     }
                 }
