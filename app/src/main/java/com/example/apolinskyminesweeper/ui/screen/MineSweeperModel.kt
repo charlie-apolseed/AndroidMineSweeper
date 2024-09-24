@@ -1,6 +1,6 @@
 package com.example.apolinskyminesweeper.ui.screen
 
-import android.app.GameState
+
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +14,8 @@ class MineSweeperModel : ViewModel() {
     var board by mutableStateOf(Array(5) { Array(5) { "" } })
     var solutionBoard by mutableStateOf(Array(5) { Array(5) { "" } })
     var flagMode by mutableStateOf(false)
+    var isGameOver by mutableStateOf(false)
+    var isGameWon by mutableStateOf(false)
 
     fun startGame() {
         // Initialize the board and solution board
@@ -29,11 +31,13 @@ class MineSweeperModel : ViewModel() {
             }
         }
         flagMode = false
+        isGameOver = false
+        isGameWon = false
         Log.d("Solution Board", solutionBoard.contentDeepToString())
     }
 
-    fun onCellClick(row: Int, col: Int): Unit {
-        if (!flagMode) { //Reveal mode
+    fun onCellClick(row: Int, col: Int) {
+        if (!flagMode) {
             if (solutionBoard[row][col] == "") {
                 getAdjacentMines(row, col)
             } else if (solutionBoard[row][col] == "mine") {
@@ -46,13 +50,30 @@ class MineSweeperModel : ViewModel() {
                 endGame()
             }
         }
+        if (isBoardFull()) {
+            isGameOver = true
+            isGameWon = true
+        }
+        // Force board update
+        board = board.copyOf() // This line triggers the recomposition
+    }
+
+    fun isBoardFull(): Boolean {
+        for (row in board) {
+            for (cell in row) {
+                if (cell == "") { // Assuming empty cells are represented by an empty string
+                    return false
+                }
+            }
+        }
+        return true
     }
 
     fun toggleFlagMode() {
         flagMode = !flagMode
     }
 
-    fun getAdjacentMines(row: Int, col: Int): Unit {
+    fun getAdjacentMines(row: Int, col: Int) {
         var mineCount = 0
         for (i in (row - 1)..(row + 1)) {
             for (j in (col - 1)..(col + 1)) {
@@ -65,8 +86,8 @@ class MineSweeperModel : ViewModel() {
         Log.d("Board", board.contentDeepToString())
     }
 
-    fun endGame(): Unit {
+    fun endGame() {
         Log.d("Game Over", "Game Over")
-        //TODO Implement end game logic
+        isGameOver = true
     }
 }
