@@ -23,14 +23,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.imageResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.apolinskyminesweeper.R
 
 
 @Composable
@@ -60,7 +66,7 @@ fun MineSweeperScreen(
                 )
             ) {
                 Text(
-                    text = "Start Game",
+                    text = stringResource(R.string.start_game),
                     style = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
@@ -68,7 +74,7 @@ fun MineSweeperScreen(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = "Flag Mode", modifier = Modifier.padding(end = 8.dp) ,
+                Text(text = stringResource(R.string.flag_mode), modifier = Modifier.padding(end = 8.dp) ,
                     style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
                 Switch(
                     checked = mineSweeperModel.flagMode,
@@ -85,7 +91,7 @@ fun MineSweeperScreen(
             }
         }
 
-
+        val imageFlagIcon = ImageBitmap.imageResource(R.drawable.flagicon)
 
         Canvas(
             modifier = Modifier
@@ -130,14 +136,24 @@ fun MineSweeperScreen(
                             size = Size(size.width / 5, size.width / 5)
                         )
                         if (value == "flag") {
-                            drawCircle(
-                                Color.Red,
-                                radius = size.width / 10,
-                                center = Offset(
-                                    (size.width / 5) * (col + .5f),
-                                    (size.width / 5) * (row + .5f)
+                            drawImage(imageFlagIcon,
+                                srcOffset = IntOffset(0,0),
+                                srcSize = IntSize(imageFlagIcon.width,imageFlagIcon.height),
+                                dstOffset = IntOffset(((size.width / 5) * (col) + (size.width / 35)).toInt(),
+                                    ((size.width / 5) * (row) + (size.height / 45)).toInt()
+                                ),
+                                dstSize = IntSize((size.width / 6).toInt(),
+                                    (size.width / 6).toInt()
                                 )
                             )
+//                            drawCircle(
+//                                Color.Red,
+//                                radius = size.width / 10,
+//                                center = Offset(
+//                                    (size.width / 5) * (col + .5f),
+//                                    (size.width / 5) * (row + .5f)
+//                                )
+//                            )
                         } else {
                             // Measure the text before drawing
                             val textLayoutResult = textMeasurer.measure(
@@ -177,13 +193,15 @@ fun MineSweeperScreen(
                             contentColor = Color.Black
                         )
                     ) {
-                        Text("Restart")
+                        Text(stringResource(R.string.restart))
                     }
                 },
-                title = { Text("Game Over") },
+                title = { Text(stringResource(R.string.game_over)) },
                 text = {
                     Text(
-                        if (mineSweeperModel.isGameWon) "You Won!" else "You Lost!",
+                        if (mineSweeperModel.isGameWon) stringResource(R.string.you_won) else stringResource(
+                            R.string.you_lost
+                        ),
                         style = TextStyle(fontSize = 18.sp) // Optional: Adjust text size
                     )
                 }
