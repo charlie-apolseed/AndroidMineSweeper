@@ -11,16 +11,17 @@ import kotlin.random.Random
 
 
 class MineSweeperModel : ViewModel() {
-    var board by mutableStateOf(Array(5) { Array(5) { "" } })
-    var solutionBoard by mutableStateOf(Array(5) { Array(5) { "" } })
+    val BOARD_SIZE = 5
+    var board by mutableStateOf(Array(BOARD_SIZE) { Array(BOARD_SIZE) { "" } })
+    var solutionBoard by mutableStateOf(Array(BOARD_SIZE) { Array(BOARD_SIZE) { "" } })
     var flagMode by mutableStateOf(false)
     var isGameOver by mutableStateOf(false)
     var isGameWon by mutableStateOf(false)
-    final val BOARD_SIZE = 5
+
 
     fun startGame() {
         // Initialize the board and solution board
-        board = Array(BOARD_SIZE) { Array(5) { "" } }
+        board = Array(BOARD_SIZE) { Array(BOARD_SIZE) { "" } }
         solutionBoard = Array(BOARD_SIZE) { Array(BOARD_SIZE) { "" } }
         var mineCount = 3
         while (mineCount > 0) {
@@ -41,13 +42,13 @@ class MineSweeperModel : ViewModel() {
         if (!flagMode) {
             if (solutionBoard[row][col] == "") {
                 board[row][col] = getAdjacentMines(row, col).toString()
-            } else if (solutionBoard[row][col] == "mine") {
+            } else if (solutionBoard[row][col] == "mine" && board[row][col] == "") {
                 endGame()
             }
         } else { //Flag mode
             if (solutionBoard[row][col] == "mine") {
                 board[row][col] = "flag"
-            } else if (solutionBoard[row][col] == "") {
+            } else if (solutionBoard[row][col] == "" && board[row][col] == "") {
                 endGame()
             }
         }
