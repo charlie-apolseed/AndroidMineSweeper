@@ -11,22 +11,22 @@ import kotlin.random.Random
 
 
 class MineSweeperModel : ViewModel() {
-    val BOARD_SIZE = 5
-    var board by mutableStateOf(Array(BOARD_SIZE) { Array(BOARD_SIZE) { "" } })
-    var solutionBoard by mutableStateOf(Array(BOARD_SIZE) { Array(BOARD_SIZE) { "" } })
+    var boardSize by mutableStateOf(5)
+    var board by mutableStateOf(Array(boardSize) { Array(boardSize) { "" } })
+    var solutionBoard by mutableStateOf(Array(boardSize) { Array(boardSize) { "" } })
     var flagMode by mutableStateOf(false)
     var isGameOver by mutableStateOf(false)
     var isGameWon by mutableStateOf(false)
+    var mineCount by mutableStateOf(3)
 
 
     fun startGame() {
-        // Initialize the board and solution board
-        board = Array(BOARD_SIZE) { Array(BOARD_SIZE) { "" } }
-        solutionBoard = Array(BOARD_SIZE) { Array(BOARD_SIZE) { "" } }
-        var mineCount = 3
+
+        board = Array(boardSize) { Array(boardSize) { "" } }
+        solutionBoard = Array(boardSize) { Array(boardSize) { "" } }
         while (mineCount > 0) {
-            val x = Random.nextInt(BOARD_SIZE)
-            val y = Random.nextInt(BOARD_SIZE)
+            val x = Random.nextInt(boardSize)
+            val y = Random.nextInt(boardSize)
             if (solutionBoard[x][y] == "") {
                 solutionBoard[x][y] = "mine"
                 mineCount--
@@ -36,6 +36,17 @@ class MineSweeperModel : ViewModel() {
         isGameOver = false
         isGameWon = false
         Log.d("Solution Board", solutionBoard.contentDeepToString())
+    }
+
+    fun updateBoardSize (size: Int) {
+        boardSize = size
+        mineCount = when (size) {
+            5 -> 3
+            7 -> 6
+            10 -> 15
+            else -> 3
+        }
+        startGame()
     }
 
     fun onCellClick(row: Int, col: Int) {
@@ -56,14 +67,14 @@ class MineSweeperModel : ViewModel() {
             isGameOver = true
             isGameWon = true
         }
-        // Force board update
-        board = board.copyOf() // This line triggers the recomposition
+
+        board = board.copyOf()
     }
 
     fun isBoardFull(): Boolean {
         for (row in board) {
             for (cell in row) {
-                if (cell == "") { // Assuming empty cells are represented by an empty string
+                if (cell == "") {
                     return false
                 }
             }
@@ -79,30 +90,30 @@ class MineSweeperModel : ViewModel() {
         var mineCount = 0
         for (i in (row - 1)..(row + 1)) {
             for (j in (col - 1)..(col + 1)) {
-                if ((i in 0..(BOARD_SIZE - 1) && j in 0..(BOARD_SIZE - 1)) && (solutionBoard[i][j] == "mine")) {
+                if ((i in 0..(boardSize - 1) && j in 0..(boardSize - 1)) && (solutionBoard[i][j] == "mine")) {
                     mineCount += 1
                 }
             }
         }
         if (mineCount == 0) {
-            val isRevealed = Array(BOARD_SIZE) { Array(BOARD_SIZE) { false } }
+            val isRevealed = Array(boardSize) { Array(boardSize) { false } }
             revealEmptyArea(row, col, isRevealed)
         }
         Log.d("Board", board.contentDeepToString())
         return mineCount
     }
 
-    fun revealEmptyArea(row: Int, col: Int, isRevealed: Array<Array<Boolean>> = Array(BOARD_SIZE) { Array(BOARD_SIZE) { false } }) {
+    fun revealEmptyArea(row: Int, col: Int, isRevealed: Array<Array<Boolean>> = Array(boardSize) { Array(boardSize) { false } }) {
         isRevealed[row][col] = true
         for (i in (row - 1)..(row + 1)) {
             for (j in (col - 1)..(col + 1)) {
-                if ((i in 0..(BOARD_SIZE - 1) && j in 0..(BOARD_SIZE - 1)) && (solutionBoard[i][j] == "mine")) {
+                if ((i in 0..(boardSize - 1) && j in 0..(boardSize - 1)) && (solutionBoard[i][j] == "mine")) {
                     return
                 }
             }
         }
         board[row][col] = "0"
-        if (row + 1 < BOARD_SIZE) {
+        if (row + 1 < boardSize) {
             if (!isRevealed[row + 1][col]) {
                 revealEmptyArea(row + 1, col, isRevealed)
             }
@@ -112,7 +123,7 @@ class MineSweeperModel : ViewModel() {
                 revealEmptyArea(row - 1, col, isRevealed)
             }
         }
-        if (col + 1 < BOARD_SIZE) {
+        if (col + 1 < boardSize) {
             if (!isRevealed[row][col + 1]) {
                 revealEmptyArea(row, col + 1, isRevealed)
             }

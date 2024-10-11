@@ -7,4 +7,7 @@
     <string name="you_won">You Won!</string>
     <string name="you_lost">You Lost!</string>
     <string name="apolinsky_mine_sweeper">Apolinsky Mine Sweeper</string>
+    <string name="_5x5">" 5x5 "</string>
+    <string name="_7x7">" 7x7 "</string>
+    <string name="_10x10">10x10</string>
 </resources>

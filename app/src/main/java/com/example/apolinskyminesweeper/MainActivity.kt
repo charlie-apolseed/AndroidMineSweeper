@@ -5,14 +5,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
@@ -30,19 +29,28 @@ class MainActivity : ComponentActivity() {
 
                 Scaffold(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color(0xFFFFFFFF)), // Set the background color to white
+                        .fillMaxSize(), // Set the background color to white
                 ) { innerPadding ->
-                    Column {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 16.dp),  // Reduced the vertical padding
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Image(
                             bitmap = logo,
                             contentDescription = "Logo",
-                            modifier = Modifier.padding(bottom = 16.dp).padding(top = 20.dp)
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)  // Reduced space between the logo and screen content
+                                .padding(top = 20.dp)
                         )
+
+                        // Removed the extra padding in MineSweeperScreen
                         MineSweeperScreen(modifier = Modifier.padding(innerPadding))
                     }
                 }
             }
         }
     }
+
 }

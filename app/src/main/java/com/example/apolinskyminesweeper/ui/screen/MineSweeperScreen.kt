@@ -39,6 +39,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.apolinskyminesweeper.R
 
 
+
 @Composable
 fun MineSweeperScreen(
     modifier: Modifier,
@@ -47,13 +48,47 @@ fun MineSweeperScreen(
     val mineSweeperModel = viewModel
     val textMeasurer = rememberTextMeasurer()
 
-
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
+        Row(
+            modifier = modifier
+                .fillMaxWidth(.9f)
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Button(
+                onClick = { mineSweeperModel.updateBoardSize(5) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFE090E0),
+                    contentColor = Color.Black
+                )
+            ) {
+                Text(text = stringResource(R.string._5x5), style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+            }
 
+            Button(
+                onClick = { mineSweeperModel.updateBoardSize(7) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFE044E0),
+                    contentColor = Color.Black
+                )
+            ) {
+                Text(text = stringResource(R.string._7x7), style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+            }
+
+            Button(
+                onClick = { mineSweeperModel.updateBoardSize(10) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFBA11BA),
+                    contentColor = Color.Black
+                )
+            ) {
+                Text(text = stringResource(R.string._10x10), style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold))
+            }
+        }
 
         Row(
             modifier = modifier.fillMaxWidth(.9f),
@@ -71,12 +106,16 @@ fun MineSweeperScreen(
                     style = TextStyle(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
-                    ))
+                    )
+                )
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(text = stringResource(R.string.flag_mode), modifier = Modifier.padding(end = 8.dp) ,
-                    style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold))
+                Text(
+                    text = stringResource(R.string.flag_mode),
+                    modifier = Modifier.padding(end = 8.dp),
+                    style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                )
                 Switch(
                     checked = mineSweeperModel.flagMode,
                     colors = SwitchDefaults.colors(
@@ -101,8 +140,8 @@ fun MineSweeperScreen(
                 .pointerInput(key1 = Unit) {
                     detectTapGestures { offset -> // offset is the position of the tap
                         Log.d("Click: ", "x: ${offset.x}, y: ${offset.y}")
-                        val col = (offset.x / (size.width / mineSweeperModel.BOARD_SIZE)).toInt()
-                        val row = (offset.y / (size.width /mineSweeperModel.BOARD_SIZE )).toInt()
+                        val col = (offset.x / (size.width / mineSweeperModel.boardSize)).toInt()
+                        val row = (offset.y / (size.width / mineSweeperModel.boardSize)).toInt()
                         Log.d("Click: ", "row: $row, col: $col")
                         mineSweeperModel.onCellClick(row, col)
                     }
@@ -113,76 +152,80 @@ fun MineSweeperScreen(
                 topLeft = Offset.Zero,
             )
 
-            for (i in 1..(mineSweeperModel.BOARD_SIZE-1)) { //Draw the grid lines
+            for (i in 1..(mineSweeperModel.boardSize-1)) { //Draw the grid lines
                 drawLine(
                     Color.Black,
-                    start = Offset(i * size.width /mineSweeperModel.BOARD_SIZE , 0f),
-                    end = Offset(i * size.width /mineSweeperModel.BOARD_SIZE , size.height),
+                    start = Offset(i * size.width /mineSweeperModel.boardSize , 0f),
+                    end = Offset(i * size.width /mineSweeperModel.boardSize , size.height),
                     strokeWidth = 5f
                 )
                 drawLine(
                     Color.Black,
-                    start = Offset(0f, i * size.width / mineSweeperModel.BOARD_SIZE),
-                    end = Offset(size.width, i * size.width / mineSweeperModel.BOARD_SIZE),
+                    start = Offset(0f, i * size.width / mineSweeperModel.boardSize),
+                    end = Offset(size.width, i * size.width / mineSweeperModel.boardSize),
                     strokeWidth = 5f
                 )
             }
 
             mineSweeperModel.board.forEachIndexed { row, rowData ->
                 rowData.forEachIndexed { col, value ->
+                    val cellSize = size.width / mineSweeperModel.boardSize
+
                     if (value != "") {
-                        drawRect( //change the color of the background square
+                        drawRect(
                             Color.LightGray,
-                            topLeft = Offset((size.width / mineSweeperModel.BOARD_SIZE) * col, (size.width / mineSweeperModel.BOARD_SIZE) * row),
-                            size = Size(size.width / mineSweeperModel.BOARD_SIZE, size.width / mineSweeperModel.BOARD_SIZE)
+                            topLeft = Offset(cellSize * col, cellSize * row),
+                            size = Size(cellSize, cellSize)
                         )
+
                         if (value == "flag") {
-                            drawImage(imageFlagIcon,
-                                srcOffset = IntOffset(0,0),
-                                srcSize = IntSize(imageFlagIcon.width,imageFlagIcon.height),
-                                dstOffset = IntOffset(((size.width / mineSweeperModel.BOARD_SIZE) * (col) + (size.width / 35)).toInt(),
-                                    ((size.width / mineSweeperModel.BOARD_SIZE) * (row) + (size.height / 45)).toInt()
+
+                            drawImage(
+                                imageFlagIcon,
+                                srcOffset = IntOffset(0, 0),
+                                srcSize = IntSize(imageFlagIcon.width, imageFlagIcon.height),
+                                dstOffset = IntOffset(
+                                    (cellSize * col + (cellSize / 6)).toInt(),
+                                    (cellSize * row + (cellSize / 6)).toInt()
                                 ),
-                                dstSize = IntSize((size.width / 6).toInt(),
-                                    (size.width / 6).toInt()
-                                )
+                                dstSize = IntSize((cellSize / 1.5).toInt(), (cellSize / 1.5).toInt())
                             )
                         } else {
-                            // Measure the text before drawing
+
+                            val textSize = (cellSize / 2.5).sp
                             val textLayoutResult = textMeasurer.measure(
                                 text = value,
                                 style = TextStyle(
                                     color = Color.Black,
-                                    fontSize = (size.width / 14).sp,  // Adjust text size based on cell size
+                                    fontSize = textSize,
                                     fontWeight = FontWeight.Bold
                                 )
                             )
-                            // Draw the text at the center of each cell
+
                             drawText(
                                 textLayoutResult = textLayoutResult,
                                 topLeft = Offset(
-                                    (size.width / mineSweeperModel.BOARD_SIZE) * col + (size.width / 10) - textLayoutResult.size.width / 2,
-                                    (size.width / mineSweeperModel.BOARD_SIZE) * row + (size.width / 10) - textLayoutResult.size.height / 2
+                                    cellSize * col + cellSize / 2 - textLayoutResult.size.width / 2,
+                                    cellSize * row + cellSize / 2 - textLayoutResult.size.height / 2
                                 )
                             )
                         }
                     }
-
-
                 }
             }
+
         }
-        // Game Over Popup
+
         if (mineSweeperModel.isGameOver) {
             AlertDialog(
                 onDismissRequest = { /* Handle dismiss request */ },
                 confirmButton = {
                     Button(
                         onClick = {
-                            mineSweeperModel.startGame() // Restart the game
+                            mineSweeperModel.startGame()
                         },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFDB56A4), // Pink color
+                            containerColor = Color(0xFFDB56A4),
                             contentColor = Color.Black
                         )
                     ) {
@@ -200,7 +243,5 @@ fun MineSweeperScreen(
                 }
             )
         }
-
     }
 }
-
